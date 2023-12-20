@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from random import randint, choice, shuffle
+import json
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -35,17 +36,31 @@ def save_info():
     login = login_info_entry.get()
     user_password = password_entry.get()
 
+    new_data = {
+        website: {
+            "email": login,
+            "password": user_password,
+        }
+    }
+
     if len(website) == 0 or len(login) == 0 or len(user_password) == 0:
         messagebox.showinfo(title="Missing Information", message="Please do not leave any fields blank")
     else:
-        send_it = messagebox.askokcancel(title=website, message=f"Here's the info you want to save:  \n Email: {login}"
-                                                                f"\n Password: {user_password}")
-        if send_it:
-            with open("User_Information.txt", "a") as file:
-                file.write(f"{website} | {login} | {user_password}\n")
-                website_text_entry.delete(0, END)
-                login_info_entry.delete(0, END)
-                password_entry.delete(0, END)
+        try:
+            with open("User_Information.json", "r") as data_file:
+                data = json.load(data_file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            with open("User_Information.json", "w") as data_file:
+                json.dump(new_data, data_file, indent=4)
+        else:
+            data.update(new_data)
+
+            with open("User_Information.json", "w") as data_file:
+                json.dump(data, data_file, indent=4)
+        finally:
+            website_text_entry.delete(0, END)
+            login_info_entry.delete(0, END)
+            password_entry.delete(0, END)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -69,7 +84,7 @@ website_text_entry = Entry(width=35, fg="black", bg="white", highlightthickness=
 website_text_entry.grid(row=1, column=1, columnspan=2)
 website_text_entry.focus()
 
-login_info = Label(text="Email/Password:", fg="black", bg="white")
+login_info = Label(text="Email/Login:", fg="black", bg="white")
 login_info.grid(row=2, column=0)
 # Login Entry
 login_info_entry = Entry(width=35, fg="black", bg="white", highlightthickness=0)
