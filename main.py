@@ -63,6 +63,20 @@ def save_info():
             password_entry.delete(0, END)
 
 
+# ---------------------------- WEBSITE SEARCH ------------------------------- #
+
+def find_password():
+    website = website_text_entry.get().title()
+    try:
+        with open("User_Information.json", "r") as data_file:
+            data = json.load(data_file)
+            if website in data:
+                messagebox.showinfo(title="Login information", message=f"Email: {data[website]["email"]}\n "
+                                                                       f"Password: {data[website]["password"]}")
+    except FileNotFoundError:
+        messagebox.showinfo(title="Missing File", message="There's no file to be accessed")
+
+
 # ---------------------------- UI SETUP ------------------------------- #
 
 # Window UI
@@ -79,27 +93,33 @@ canvas.grid(row=0, column=1)
 # User Input UI
 website_text = Label(text="Website:", fg="black", bg="white")
 website_text.grid(row=1, column=0)
+
 # Website Entry
-website_text_entry = Entry(width=35, fg="black", bg="white", highlightthickness=0)
-website_text_entry.grid(row=1, column=1, columnspan=2)
+website_text_entry = Entry(width=21, fg="black", bg="white", highlightthickness=0)
+website_text_entry.grid(row=1, column=1)
 website_text_entry.focus()
 
 login_info = Label(text="Email/Login:", fg="black", bg="white")
 login_info.grid(row=2, column=0)
+
 # Login Entry
 login_info_entry = Entry(width=35, fg="black", bg="white", highlightthickness=0)
 login_info_entry.grid(row=2, column=1, columnspan=2)
 
 password = Label(text="Password:", fg="black", bg="white")
 password.grid(row=3, column=0)
+
 # Password Entry
 password_entry = Entry(width=21, fg="black", bg="white", highlightthickness=0)
 password_entry.grid(row=3, column=1)
+
+# Buttons
+add_button = Button(width=32, text="Add", bg="white", bd=0, highlightthickness=0, command=save_info)
+add_button.grid(row=4, column=1, columnspan=2)
 generate_password = Button(text="Generate Password", bg="white", bd=0,
                            highlightthickness=0, width=10, command=password_gen)
 generate_password.grid(row=3, column=2)
-
-add_button = Button(width=32, text="Add", bg="white", bd=0, highlightthickness=0, command=save_info)
-add_button.grid(row=4, column=1, columnspan=2)
+search_button = Button(width=10, text="Search", bg="white", bd=0, highlightthickness=0, command=find_password)
+search_button.grid(row=1, column=2)
 
 window.mainloop()
